@@ -77,9 +77,10 @@ WSGI_APPLICATION = "octofit_tracker.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+# Update database configuration to use pymongo
 DATABASES = {
     "default": {
-        "ENGINE": "djongo",
+        "ENGINE": "django.db.backends.dummy",  # Dummy engine for pymongo
         "NAME": "octofit_db",
         "HOST": "localhost",
         "PORT": 27017,

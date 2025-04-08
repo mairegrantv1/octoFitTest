@@ -1,27 +1,11 @@
-"""octofit_tracker URL Configuration
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/4.1/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
-
-from django.contrib import admin
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-
-# Define API root
-router = DefaultRouter()
+from django.urls import path
+from .views import api_root, get_users, get_teams, get_activities, get_leaderboard, get_workouts
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("api/", include(router.urls)),
+    path('', api_root, name='api-root'),
+    path('api/users/', get_users, name='get-users'),
+    path('api/teams/', get_teams, name='get-teams'),
+    path('api/activities/', get_activities, name='get-activities'),
+    path('api/leaderboard/', get_leaderboard, name='get-leaderboard'),
+    path('api/workouts/', get_workouts, name='get-workouts'),
 ]

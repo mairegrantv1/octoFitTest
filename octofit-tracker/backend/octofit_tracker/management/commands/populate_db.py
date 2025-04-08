@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from octofit_tracker.models import User, Team, Activity, Leaderboard, Workout
+from octofit_tracker.models import users_collection, teams_collection, activities_collection, leaderboard_collection, workouts_collection
 from bson import ObjectId
 from datetime import timedelta
 
@@ -8,54 +8,57 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         # Clear existing data
-        User.objects.all().delete()
-        Team.objects.all().delete()
-        Activity.objects.all().delete()
-        Leaderboard.objects.all().delete()
-        Workout.objects.all().delete()
+        users_collection.delete_many({})
+        teams_collection.delete_many({})
+        activities_collection.delete_many({})
+        leaderboard_collection.delete_many({})
+        workouts_collection.delete_many({})
 
         # Create users
         users = [
-            User(_id=ObjectId(), email='thundergod@mhigh.edu', name='Thor'),
-            User(_id=ObjectId(), email='metalgeek@mhigh.edu', name='Tony Stark'),
-            User(_id=ObjectId(), email='zerocool@mhigh.edu', name='Steve Rogers'),
-            User(_id=ObjectId(), email='crashoverride@mhigh.edu', name='Natasha Romanoff'),
-            User(_id=ObjectId(), email='sleeptoken@mhigh.edu', name='Bruce Banner'),
+            {"_id": ObjectId(), "username": "thundergod", "email": "thundergod@mhigh.edu", "password": "thundergodpassword"},
+            {"_id": ObjectId(), "username": "metalgeek", "email": "metalgeek@mhigh.edu", "password": "metalgeekpassword"},
+            {"_id": ObjectId(), "username": "zerocool", "email": "zerocool@mhigh.edu", "password": "zerocoolpassword"},
+            {"_id": ObjectId(), "username": "crashoverride", "email": "crashoverride@mhigh.edu", "password": "crashoverridepassword"},
+            {"_id": ObjectId(), "username": "sleeptoken", "email": "sleeptoken@mhigh.edu", "password": "sleeptokenpassword"},
         ]
-        User.objects.bulk_create(users)
+        users_collection.insert_many(users)
 
         # Create teams
         teams = [
-            Team(_id=ObjectId(), name='Blue Team'),
-            Team(_id=ObjectId(), name='Gold Team'),
+            {"_id": ObjectId(), "name": "Blue Team", "members": [users[0]["_id"], users[1]["_id"]]},
+            {"_id": ObjectId(), "name": "Gold Team", "members": [users[2]["_id"], users[3]["_id"], users[4]["_id"]]},
         ]
-        Team.objects.bulk_create(teams)
+        teams_collection.insert_many(teams)
 
         # Create activities
         activities = [
-            Activity(_id=ObjectId(), user=users[0], type='Cycling', duration=60),
-            Activity(_id=ObjectId(), user=users[1], type='Crossfit', duration=120),
-            Activity(_id=ObjectId(), user=users[2], type='Running', duration=90),
-            Activity(_id=ObjectId(), user=users[3], type='Strength', duration=30),
-            Activity(_id=ObjectId(), user=users[4], type='Swimming', duration=75),
+            {"_id": ObjectId(), "user": users[0]["_id"], "activity_type": "Cycling", "duration": timedelta(hours=1).total_seconds()},
+            {"_id": ObjectId(), "user": users[1]["_id"], "activity_type": "Crossfit", "duration": timedelta(hours=2).total_seconds()},
+            {"_id": ObjectId(), "user": users[2]["_id"], "activity_type": "Running", "duration": timedelta(hours=1, minutes=30).total_seconds()},
+            {"_id": ObjectId(), "user": users[3]["_id"], "activity_type": "Strength", "duration": timedelta(minutes=30).total_seconds()},
+            {"_id": ObjectId(), "user": users[4]["_id"], "activity_type": "Swimming", "duration": timedelta(hours=1, minutes=15).total_seconds()},
         ]
-        Activity.objects.bulk_create(activities)
+        activities_collection.insert_many(activities)
 
         # Create leaderboard entries
-        leaderboard_entries = [
-            Leaderboard(_id=ObjectId(), team=teams[0], score=100),
-            Leaderboard(_id=ObjectId(), team=teams[1], score=90),
+        leaderboard = [
+            {"_id": ObjectId(), "user": users[0]["_id"], "score": 100},
+            {"_id": ObjectId(), "user": users[1]["_id"], "score": 90},
+            {"_id": ObjectId(), "user": users[2]["_id"], "score": 95},
+            {"_id": ObjectId(), "user": users[3]["_id"], "score": 85},
+            {"_id": ObjectId(), "user": users[4]["_id"], "score": 80},
         ]
-        Leaderboard.objects.bulk_create(leaderboard_entries)
+        leaderboard_collection.insert_many(leaderboard)
 
         # Create workouts
         workouts = [
-            Workout(_id=ObjectId(), name='Cycling Training', description='Training for a road cycling event'),
-            Workout(_id=ObjectId(), name='Crossfit', description='Training for a crossfit competition'),
-            Workout(_id=ObjectId(), name='Running Training', description='Training for a marathon'),
-            Workout(_id=ObjectId(), name='Strength Training', description='Training for strength'),
-            Workout(_id=ObjectId(), name='Swimming Training', description='Training for a swimming competition'),
+            {"_id": ObjectId(), "name": "Cycling Training", "description": "Training for a road cycling event"},
+            {"_id": ObjectId(), "name": "Crossfit", "description": "Training for a crossfit competition"},
+            {"_id": ObjectId(), "name": "Running Training", "description": "Training for a marathon"},
+            {"_id": ObjectId(), "name": "Strength Training", "description": "Training for strength"},
+            {"_id": ObjectId(), "name": "Swimming Training", "description": "Training for a swimming competition"},
         ]
-        Workout.objects.bulk_create(workouts)
+        workouts_collection.insert_many(workouts)
 
         self.stdout.write(self.style.SUCCESS('Successfully populated the database with test data.'))
